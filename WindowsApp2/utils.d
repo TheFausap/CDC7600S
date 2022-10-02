@@ -653,14 +653,15 @@ void O17ik()
 void O26ijk()
 {
     U6 ex;
+    U8[10] exx;
 
     X[IWi][0..47] = X[IWk][0..47];
     for (int i=48;i<60;i++) {
         X[IWi][i] = X[IWk][59];
 	}
     
-	B[IWj][0..9] = X[IWk][48..57];
-    ex = REGVAL(B[IWj],SMREGSZ);
+	exx = X[IWk][48..58];
+    ex = REGVAL(exx,SMREGSZ);
     ex -= 1024;
     SETBV(ex,cast(U8)IWj);
     for (int i=10;i<18;i++) {
