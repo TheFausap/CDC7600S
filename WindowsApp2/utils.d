@@ -354,6 +354,23 @@ U6 REGVAL(U8[] r, U8 l)
     return rr;
 }
 
+/// <summary>
+/// Convert a regitry into a decimal value
+/// </summary>
+/// <param name="r">registry</param>
+/// <param name="l">registry lenght (HWDSIZE or SMREGSZ)</param>
+/// <returns>decimal representation</returns>
+U6 REGVALN(U8[] r, U8 s, U8 e)
+{
+    U6 rr = 0;
+
+    for (int j = s; j < e; j++) {
+        rr += r[j] * pow(2, j);
+    }
+
+    return rr;
+}
+
 /// INSTRUCTION CODES
 void _O00(U8 fl, U8 set) 
 {
@@ -674,7 +691,27 @@ void O26ijk()
 
 void parseCIW()
 {
-    
+    U8 pno = 0;
+    U8 curparc = 0;
+    IWg = cast(U8)REGVALN(CIW,57,59);
+    IWh = cast(U8)REGVALN(CIW,54,56);
+    if ((IWg == 0) && (IWh == 0)) _O00(mEXIT,1);
+    if (IWg == 0) {
+        IWi = cast(U8)REGVALN(CIW,51,53);
+        pno = CIWmap[800+IWg*10+IWi];
+	} else {
+        pno = CIWmap[IWg*10+IWh];
+	}
+    if (pno == 1) 
+	{
+        GETPARCEL(SIW,CIW,curparc,1);
+        curparc++;
+	} else {
+        GETPARCEL(DIW,CIW,curparc,2);
+        curparc++;
+        curparc++;
+	}
+    if (curparc > 3) curparc = 0;
 }
 
 void INIT()
