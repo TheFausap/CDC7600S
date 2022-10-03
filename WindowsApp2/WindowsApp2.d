@@ -22,7 +22,7 @@ int main()
 
     parseCIW();
 
-    ROUND(FP1,X[1]);
+    FROUND(FP1,X[1]);
     CPYRRD(X[3],FP1);
 
     DUMP();

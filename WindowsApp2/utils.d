@@ -7,6 +7,7 @@ import std.format;
 import core.stdc.stdlib : exit;
 import std.random;
 import std.range;
+import fp;
 
 
 alias UI=uint;
@@ -652,7 +653,7 @@ void O13ijk()
 
 void O14ik()
 {
-    X[IWi] = X[IWk];
+    X[IWi][] = X[IWk][];
     C9D(X[IWi]);
 }
 
@@ -757,7 +758,7 @@ void O21ijk()
 
 void O22ijk()
 {
-    X[IWi] = X[IWk];
+    X[IWi][] = X[IWk][];
     int t = 0;
     U8 t1 = 0;
 
@@ -782,7 +783,7 @@ void O22ijk()
 
 void O23ijk()
 {
-    X[IWi] = X[IWk];
+    X[IWi][] = X[IWk][];
     int t = 0;
     U8 t1 = 0;
 
@@ -824,7 +825,7 @@ void O43ijk()
 
 void O24ijk()
 {
-    U8[] co = X[IWk][0..47];
+    U8[] co = X[IWk][0..48];
     UI i = 1;
     U6 ex = REGVALN(X[IWk],48,58);
 
@@ -841,7 +842,50 @@ void O24ijk()
 		}
 		ex -= i;
 		SETBV(cast(U6)i,cast(U8)IWj);
-        X[IWi][0..47] = co;
+        X[IWi][0..48] = co;
+        if (ex < 0) {
+            ex = abs(ex);
+			for (int ll = 48;ll<59;ll++) {
+                X[IWi][ll] = !(ex % 2);
+                ex /= 2;
+			}
+		} else {
+			for (int ll = 48;ll<59;ll++) {
+                X[IWi][ll] = ex % 2;
+                ex /= 2;
+			}
+		}
+		if (ex < -1023) {
+			X[IWi][] = X[IWk][59];
+		}
+		if ((X[IWk] == ZRO) || (X[IWk] == ONE)) {
+			SETBV(48UL,cast(U8)IWj);
+			X[IWi][] = X[IWk][59];
+		}
+	}
+}
+
+void O25ijk()
+{
+    U8[] co = X[IWk][0..48];
+    ROUND(co);
+    UI i = 1;
+    U6 ex = REGVALN(X[IWk],48,58);
+
+    if ((ex == 2047) || (ex == 2048) || (ex == 1023) || (ex == 3072)) {
+        SETBV(0UL,cast(U8)IWj);
+        X[IWi] = X[IWk];
+	} else {
+        ex = REGVALN(X[IWk],48,57);
+		ex *= (X[IWk][58] == 0) ? 1 : -1;
+
+		while (co[47] != X[IWk][59]) {
+			LSH(co,i);
+			i++;
+		}
+		ex -= i;
+		SETBV(cast(U6)i,cast(U8)IWj);
+        X[IWi][0..48] = co;
         if (ex < 0) {
             ex = abs(ex);
 			for (int ll = 48;ll<59;ll++) {
