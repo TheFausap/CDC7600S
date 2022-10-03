@@ -46,6 +46,9 @@ enum int mSTEP=15;
 enum int mMONI=16;
 enum int mEXIT=17;
 
+// CIW parsing helper
+U8[int] CIWmap;
+
 void CR() {printf("\n");}
 
 // each byte contains only 1 bit. wasted space
@@ -669,6 +672,10 @@ void O26ijk()
 	}
 }
 
+void parseCIW()
+{
+    
+}
 
 void INIT()
 {
@@ -687,6 +694,37 @@ void INIT()
 	} while (RAS + 1024 > SCMSIZE);
     FLL = RAL + 8191;
     FLS = RAS + 1023;
+
+    CIWmap[810] = 2;
+    CIWmap[811] = 2;
+    CIWmap[812] = 2;
+    CIWmap[813] = 12;
+    CIWmap[814] = 1;
+    CIWmap[815] = 1;
+    CIWmap[816] = 1;
+    CIWmap[817] = 1;
+    CIWmap[82] = 2;
+    CIWmap[830] = 2;
+    CIWmap[831] = 2;
+    CIWmap[832] = 2;
+    CIWmap[833] = 2;
+    CIWmap[834] = 2;
+    CIWmap[835] = 2;
+    CIWmap[836] = 2;
+    CIWmap[837] = 2;
+    CIWmap[84] = 2;
+    CIWmap[85] = 1;
+    CIWmap[86] = 2;
+    CIWmap[87] = 2;
+    CIWmap[10] = 1;
+    CIWmap[11] = 1;
+    CIWmap[12] = 1;
+    CIWmap[13] = 1;
+    CIWmap[14] = 1;
+    CIWmap[15] = 1;
+    CIWmap[16] = 1;
+    CIWmap[17] = 1;
+
 }
 
 /// <summary>
