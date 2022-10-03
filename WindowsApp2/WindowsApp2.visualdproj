@@ -501,6 +501,7 @@
   <filesToClean>*.obj;*.cmd;*.build;*.json;*.dep;*.tlog</filesToClean>
  </Config>
  <Folder name="WindowsApp2">
+  <File path="fp.d" />
   <File path="utils.d" />
   <File path="WindowsApp2.d" />
  </Folder>

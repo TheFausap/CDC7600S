@@ -6,6 +6,7 @@ import std.stdio;
 import std.format;
 import core.stdc.stdlib : exit;
 import std.random;
+import std.range;
 
 
 alias UI=uint;
@@ -64,6 +65,9 @@ U8[HWDSIZE][8] X;
 
 U8[HWDSIZE] ONE;
 U8[HWDSIZE] ZRO;
+U8[SMREGSZ] SONE;
+U8[SMREGSZ] SZRO;
+
 U8[HWDSIZE] CIW;
 UI NEA;
 UI EEA;
@@ -93,6 +97,8 @@ U8 IWSpos = 11;
 U8 IASpos = 11;
 U8[HWDSIZE][12] IWS;
 U8[SMREGSZ][12] IAS;
+
+U8 curparc = 0;
 
 static uint _getCount()
 {
@@ -187,6 +193,7 @@ void C9S(U8[] r)
 /// <param name="rn">reg number</param>
 void SETBV(U6 v, U8 rn)
 {
+    v = abs(v);
     if ( rn != 0) {
         for (int i = 0; i < SMREGSZ; i++) {
             B[rn][i] = 0;
@@ -208,6 +215,8 @@ void SETBV(U6 v, U8 rn)
 void SETXV(U6 v, U8 rn)
 {
     U8 v1 = 0;
+
+    v = abs(v);
     for (int i = 0; i < HWDSIZE; i++) {
         X[rn][i] = 0;
     }
@@ -227,6 +236,7 @@ void SETXV(U6 v, U8 rn)
 /// <param name="rn">reg number</param>
 void SETAV(U6 v, U8 rn)
 {
+    v = abs(v);
     for (int i = 0; i < SMREGSZ; i++) {
         A[rn][i] = 0;
     }
@@ -348,7 +358,7 @@ U6 REGVAL(U8[] r, U8 l)
     U6 rr = 0;
 
     for (int j = 0; j < l; j++) {
-        rr += r[j] * pow(2, j);
+        rr += r[j] * pow(2UL, j);
     }
 
     return rr;
@@ -363,15 +373,33 @@ U6 REGVAL(U8[] r, U8 l)
 U6 REGVALN(U8[] r, U8 s, U8 e)
 {
     U6 rr = 0;
+    U8 i = 0;
 
-    for (int j = s; j < e; j++) {
-        rr += r[j] * pow(2, j);
+    for (int j = s; j <= e; j++) {
+        rr += r[j] * pow(2, i++);
     }
 
     return rr;
 }
 
+void LSH(ref U8[] r, UI t)
+{
+    U8[] ret;
+    UI j = 0;
+    ret.length = r.length;
+
+    ret[] = 0;
+
+    for(int i = t;i<r.length-1;i++) {
+		ret[j] = r[i];
+        j++;
+	}
+    r = ret;
+}
+
+///
 /// INSTRUCTION CODES
+///
 void _O00(U8 fl, U8 set) 
 {
     if (set == 1) {
@@ -383,7 +411,7 @@ void _O00(U8 fl, U8 set)
     DUMP();
 }
 
-void O11jK()
+void O011jK()
 {
     U6 K = REGVAL(_IWK,SMREGSZ);
     K += REGVAL(B[IWj],SMREGSZ);
@@ -405,7 +433,7 @@ void O11jK()
 	}
 }
 
-void O12jK()
+void O012jK()
 {
     U6 K = REGVAL(_IWK,SMREGSZ);
     K += REGVAL(B[IWj],SMREGSZ);
@@ -427,13 +455,13 @@ void O12jK()
 	}
 }
 
-void O1300()
+void O01300()
 {
     PAR = NEA & 0xFFFF;
     _O00(mEXIT,0);
 }
 
-void O14jk()
+void O014jk()
 {
     U6 saddr = REGVAL(X[IWk],20);
     if (saddr > FLL) {
@@ -447,7 +475,7 @@ void O14jk()
 	}
 }
 
-void O15jk()
+void O015jk()
 {
     U6 daddr = REGVAL(X[IWk],20);
     if (daddr > FLL) {
@@ -458,7 +486,7 @@ void O15jk()
 	}
 }
 
-void O10xK()
+void O010xK()
 {
     U8[HWDSIZE] t;
     t[59]=0; t[58]=4;
@@ -478,7 +506,7 @@ void O02xK()
     PAR = daddr;
 }
 
-void O30jk() 
+void O030jk() 
 {
     U6 t = REGVAL(X[IWj],59); // no sign bit
     if ((t == 0) || (t == 0x7FFFFFFFFFFFFFF)) {
@@ -486,7 +514,7 @@ void O30jk()
 	}
 }
 
-void O31jk() 
+void O031jk() 
 {
     U6 t = REGVAL(X[IWj],59); // no sign bit
     if ((t != 0) && (t != 0x7FFFFFFFFFFFFFF)) {
@@ -494,24 +522,24 @@ void O31jk()
 	}
 }
 
-void O32jk() 
+void O032jk() 
 {
     if (X[IWj][59] == 0) {
         PAR = IWK;
 	}
 }
 
-void O33jk() 
+void O033jk() 
 {
     if (X[IWj][59] == 1) {
         PAR = IWK;
 	}
 }
 
-void O34jk() 
+void O034jk() 
 {
-    U8[12] t = X[IWj][47..59];
-    U6 tv = REGVAL(t,12);
+    U8[13] t = X[IWj][47..60];
+    U6 tv = REGVAL(t,13);
 
     if ((tv != 2047) && (tv != 2048) &&
 		(tv != 1023) && (tv != 3072)) {
@@ -519,10 +547,10 @@ void O34jk()
 	}
 }
 
-void O35jk() 
+void O035jk() 
 {
-    U8[12] t = X[IWj][47..59];
-    U6 tv = REGVAL(t,12);
+    U8[13] t = X[IWj][47..60];
+    U6 tv = REGVAL(t,13);
 
     if ((tv == 2047) || (tv == 2048) ||
 		(tv == 1023) || (tv == 3072)) {
@@ -530,20 +558,20 @@ void O35jk()
 		}
 }
 
-void O36jk() 
+void O036jk() 
 {
-    U8[12] t = X[IWj][47..59];
-    U6 tv = REGVAL(t,12);
+    U8[13] t = X[IWj][47..60];
+    U6 tv = REGVAL(t,13);
 
     if ((tv != 1023) && (tv != 3072)) {
 			PAR = IWK;
 		}
 }
 
-void O37jk() 
+void O037jk() 
 {
-    U8[12] t = X[IWj][47..59];
-    U6 tv = REGVAL(t,12);
+    U8[13] t = X[IWj][47..60];
+    U6 tv = REGVAL(t,13);
 
     if ((tv == 1023) || (tv == 3072)) {
 		PAR = IWK;
@@ -673,26 +701,173 @@ void O17ik()
 void O26ijk()
 {
     U6 ex;
-    U8[10] exx;
+    U8[9] exx;
 
-    X[IWi][0..47] = X[IWk][0..47];
+    X[IWi][0..48] = X[IWk][0..48];
     for (int i=48;i<60;i++) {
         X[IWi][i] = X[IWk][59];
 	}
     
-	exx = X[IWk][48..58];
-    ex = REGVAL(exx,SMREGSZ);
-    ex -= 1024;
-    SETBV(ex,cast(U8)IWj);
+    B[IWj][0..10] = X[IWk][48..58];
+
+    // Exponent sign extended
     for (int i=10;i<18;i++) {
         B[IWj][i] = X[IWk][58];
+	}
+}
+
+void O27ijk()
+{
+    X[IWi][48..59] = B[IWj][0 .. 11];
+    if (X[IWk][48] == 0) {
+        X[IWi][48] = !X[IWi][48];
+	} else {
+        X[IWi][48..58] = !X[IWi][48..58];
+	}
+    X[IWi][0..48] = X[IWk][0..48];
+}
+
+void O20ijk()
+{
+    UI t = IWj*7 + IWk;
+    U8 t1 = 0;
+
+    t = t % 60;
+
+    for (int j = 0;j<t;j++) {
+		t1 = X[IWi][0];
+		for(int i = 0;i<HWDSIZE-1;i++) {
+			X[IWi][i] =  X[IWi][i+1];
+		}
+		X[IWi][59] = t1;
+    }
+}
+
+void O21ijk()
+{
+    UI t = IWj*7 + IWk;
+    U8 t1 = 0;
+
+    for (int j = 0;j<t;j++) {
+		for(int i = HWDSIZE-1;i>0;i--) {
+			X[IWi][i] =  X[IWi][i-1];
+		}
+    }
+}
+
+void O22ijk()
+{
+    X[IWi] = X[IWk];
+    int t = 0;
+    U8 t1 = 0;
+
+    if (B[IWj][17] == 0) {
+        t = cast(UI)REGVAL(B[IWj],6);
+        for (int j = 0;j<t;j++) {
+			t1 = X[IWi][0];
+			for(int i = 0;i<HWDSIZE-1;i++) {
+				X[IWi][i] =  X[IWi][i+1];
+			}
+			X[IWi][59] = t1;
+		}
+	} else {
+        t = cast(UI)REGVAL(B[IWj],12);
+        for (int j = 0;j<t;j++) {
+			for(int i = HWDSIZE-1;i>0;i--) {
+				X[IWi][i] =  X[IWi][i-1];
+			}
+		}
+	}
+}
+
+void O23ijk()
+{
+    X[IWi] = X[IWk];
+    int t = 0;
+    U8 t1 = 0;
+
+    if (B[IWj][17] == 1) {
+        t = cast(UI)REGVAL(B[IWj],6);
+        for (int j = 0;j<t;j++) {
+			t1 = X[IWi][0];
+			for(int i = 0;i<HWDSIZE-1;i++) {
+				X[IWi][i] =  X[IWi][i+1];
+			}
+			X[IWi][59] = t1;
+		}
+	} else {
+        t = cast(UI)REGVAL(B[IWj],12);
+        for (int j = 0;j<t;j++) {
+			for(int i = HWDSIZE-1;i>0;i--) {
+				X[IWi][i] =  X[IWi][i-1];
+			}
+		}
+	}
+}
+
+void O43ijk()
+{
+    UI t = IWj*7 + IWk;
+
+    X[IWi][] = 0;
+
+    if (t >= 60) {
+        X[IWi] = 1;
+	} else if(t == 0) {
+        X[IWi] = 0;
+	} else {
+        for (int i=0;i<t;i++) {
+            X[IWi][(HWDSIZE-1)-i] = 1;
+		}
+	}
+}
+
+void O24ijk()
+{
+    U8[] co = X[IWk][0..47];
+    UI i = 1;
+    U6 ex = REGVALN(X[IWk],48,58);
+
+    if ((ex == 2047) || (ex == 2048) || (ex == 1023) || (ex == 3072)) {
+        SETBV(0UL,cast(U8)IWj);
+        X[IWi] = X[IWk];
+	} else {
+        ex = REGVALN(X[IWk],48,57);
+		ex *= (X[IWk][58] == 0) ? 1 : -1;
+
+		while (co[47] != X[IWk][59]) {
+			LSH(co,i);
+			i++;
+		}
+		ex -= i;
+		SETBV(cast(U6)i,cast(U8)IWj);
+        X[IWi][0..47] = co;
+        if (ex < 0) {
+            ex = abs(ex);
+			for (int ll = 48;ll<59;ll++) {
+                X[IWi][ll] = !(ex % 2);
+                ex /= 2;
+			}
+		} else {
+			for (int ll = 48;ll<59;ll++) {
+                X[IWi][ll] = ex % 2;
+                ex /= 2;
+			}
+		}
+		if (ex < -1023) {
+			X[IWi][] = X[IWk][59];
+		}
+		if ((X[IWk] == ZRO) || (X[IWk] == ONE)) {
+			SETBV(48UL,cast(U8)IWj);
+			X[IWi][] = X[IWk][59];
+		}
 	}
 }
 
 void parseCIW()
 {
     U8 pno = 0;
-    U8 curparc = 0;
+    
     IWg = cast(U8)REGVALN(CIW,57,59);
     IWh = cast(U8)REGVALN(CIW,54,56);
     if ((IWg == 0) && (IWh == 0)) _O00(mEXIT,1);
@@ -718,7 +893,11 @@ void INIT()
 {
     alias RASLCG = LinearCongruentialEngine!(uint, 47275, 0, 2_134_483_647);
 	alias RALLCG = LinearCongruentialEngine!(uint, 43375, 0, 2_142_484_647);
-    B[0] = 0;
+    B[0][] = 0;
+    ONE[] = 1;
+    ZRO[] = 0;
+    SONE[] = 1;
+    SZRO[] = 0;
     auto rnds = RASLCG(_getCount());
     do {
         RAL = 4095 + (rnds.front % 256000);
@@ -924,5 +1103,12 @@ void DUMP()
     writef("FLL:\t0%o   ",FLL);
     writef("FLS:\t0%o",FLS);
     writef("\t\t LCM [0 - 0%o]",LCMSIZE-1);
+    CR;
+    writeln("----");
+    writef("g: %d\t",IWg);
+    writef("h: %d\t",IWh);
+    writef("i: %d\t",IWi);
+    writef("j: %d\t",IWj);
+    writef("k: %d\t",IWk);
     CR;
 }
