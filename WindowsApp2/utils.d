@@ -398,6 +398,21 @@ void LSH(ref U8[] r, UI t)
     r = ret;
 }
 
+void RSH(ref U8[] r, UI t)
+{
+    U8[] ret;
+    UI j = 0;
+    ret.length = r.length;
+
+    ret[] = 0;
+
+    for(int i = 0;i<(r.length-1)-(t-1);i++) {
+		ret[j+t] = r[i];
+        j++;
+	}
+    r = ret;
+}
+
 ///
 /// INSTRUCTION CODES
 ///
