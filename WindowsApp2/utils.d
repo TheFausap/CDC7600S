@@ -1,6 +1,7 @@
 module utils;
 
 import std.math;
+import std.array;
 import core.stdc.stdio;
 import std.stdio;
 import std.format;
@@ -100,6 +101,9 @@ U8[HWDSIZE][12] IWS;
 U8[SMREGSZ][12] IAS;
 
 U8 curparc = 0;
+
+// DISPLAY VARIABLES
+auto Xspec = singleSpec("%o");
 
 static uint _getCount()
 {
@@ -349,7 +353,7 @@ void EXTNS(U8[] d, U8[] s)
 }
 
 /// <summary>
-/// Convert a regitry into a decimal value
+/// Convert a regitry into a decimal value (unsigned)
 /// </summary>
 /// <param name="r">registry</param>
 /// <param name="l">registry lenght (HWDSIZE or SMREGSZ)</param>
@@ -363,6 +367,52 @@ U6 REGVAL(U8[] r, U8 l)
     }
 
     return rr;
+}
+
+/// <summary>
+/// Convert a regitry into a octal value (unsigned)
+/// </summary>
+/// <param name="r">registry</param>
+/// <param name="l">registry lenght (HWDSIZE or SMREGSZ)</param>
+/// <returns>decimal representation</returns>
+U8[] REGVALO(U8[] r, U8 l)
+{
+    U8[] rr;
+    U6 i = 0;
+
+    rr.length = (r.length/3) + 1;
+    rr[] = 0;
+
+    for (int j = 0;j < l;j=j+3) {
+        rr[i] += r[j] + r[j+1]*2 + r[j+2]*4;
+        i++;
+	}
+
+    return rr;
+}
+
+/// <summary>
+/// Convert a regitry into a decimal value (signed)
+/// </summary>
+/// <param name="r">registry</param>
+/// <param name="l">registry lenght (HWDSIZE or SMREGSZ)</param>
+/// <returns>decimal representation</returns>
+long SREGVAL(U8[] r, U8 l)
+{
+    long rr = 0;
+    U8 neg = 0;
+
+    // if negative uncomplement
+    if (r[l-1] == 1) {
+        for (int i=0;i<l;i++) {
+            r[i] = !r[i];
+		}
+	}
+    for (int j = 0; j < l-1; j++) {
+        rr += r[j] * pow(2UL, j);
+    }
+
+    return (neg == 0) ? rr : -rr;
 }
 
 /// <summary>
@@ -1050,6 +1100,16 @@ void INIT()
 
 }
 
+void WRITEO(U8[] r, U6 l)
+{
+    for(U6 i = (l/3)-1;i>=2;i=i-2) {
+        write(r[i]);
+        write(r[i-1]);
+        write(r[i-2]);
+        write(" ");
+	}
+}
+
 /// <summary>
 /// Dump some interesting memory contents on the stdout
 /// Value are unsigned
@@ -1081,7 +1141,7 @@ void DUMP()
             writef("%d", X[j][i]);
         }
         printf("\t(");
-        write(REGVAL(X[j], HWDSIZE));
+        WRITEO(REGVALO(X[j], HWDSIZE),HWDSIZE);
         printf(")\n");
     }
     writeln("----");

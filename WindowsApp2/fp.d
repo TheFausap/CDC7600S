@@ -7,11 +7,18 @@ U6 BEXPN(U8[] f)
 	return REGVALN(f,48,58);
 }
 
+///
+/// Return the decimal value of the exponent in a packed FP number
+///
 U6 EXPN(U8[] f)
 {
 	U6 rr = REGVALN(f,48,57);
-	rr *= (f[58] == 0) ? 1 : -1;
-
+	if ((f[59] == 0) && f[58]==0) {
+		rr *= -1;
+	} else if ((f[59] == 1) && (f[58]==1)) {
+		rr *= -11;
+	}
+	
 	return rr;
 }
 
@@ -86,4 +93,49 @@ void ROUND(U8[] d)
 		}
 		d[i-1] = 1;
 	}
+}
+
+U6 digi(U6 n)
+{
+	U6 j = 0;
+	
+	if (n == 0) {
+		return 1;
+	}
+
+	while (n != 0) {
+		n /= 10;
+		j++;
+	}
+
+	return j;
+}
+
+void PACK(U8[] f, U8[] e, U8[] c)
+{
+	long sex = SREGVAL(e,SMREGSZ);
+	U6 ex = REGVAL(e,SMREGSZ);
+	long sco = SREGVAL(c,48);
+	U6 co = REGVAL(c,48);
+
+	if (sex >=0) {
+		ex += 1024;
+	} else {
+		ex = 1023 - ex;
+	}
+	
+	if (sco < 0) {
+		ex = (10 ^^ digi(ex) - 1) - ex;
+	}
+	for (int i=0;i<48;i++) {
+		f[i] = co % 2;
+		co /= 2;
+	}
+	for (int i=48;i<59;i++) {
+		f[i] = (ex % 2);
+		ex /= 2;
+	}
+	
+	f[59] = (sex >=0) ? 0 : 1;
+
 }
