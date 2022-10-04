@@ -204,8 +204,8 @@ void SETBV(U6 v, U8 rn)
             B[rn][i] = 0;
         }
 
-        for (int i = SMREGSZ - 1; i >= 0; i--) {
-            B[rn][i] = (v % 2);
+        for (int i = 0; i < SMREGSZ; i++) {
+            B[rn][i] = v % 2;
             v /= 2;
         }
 	}
@@ -219,16 +219,13 @@ void SETBV(U6 v, U8 rn)
 /// <param name="rn">reg number</param>
 void SETXV(U6 v, U8 rn)
 {
-    U8 v1 = 0;
-
     v = abs(v);
     for (int i = 0; i < HWDSIZE; i++) {
         X[rn][i] = 0;
     }
 
     for (int i = 0; i < HWDSIZE; i++) {
-        v1 = v % 2;
-        X[rn][i] = v1;
+        X[rn][i] = v % 2;
         v /= 2;
     }
 }
@@ -1102,11 +1099,9 @@ void INIT()
 
 void WRITEO(U8[] r, U6 l)
 {
-    for(U6 i = (l/3)-1;i>=2;i=i-2) {
+    for(long i = (l/3)-1;i>=0;i--) {
         write(r[i]);
-        write(r[i-1]);
-        write(r[i-2]);
-        write(" ");
+        if ((i%4) == 0) write(" ");
 	}
 }
 

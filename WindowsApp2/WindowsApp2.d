@@ -22,12 +22,12 @@ int main()
 
     parseCIW();
 
-    SETXV(1,1);
-    SETBV(0,1);
+    SETXV(140737488355328,1);
+    SETBV(32720,1);
 
     //FROUND(FP1,X[1]);
 
-    PACK(FP1,B[1],X[1]);
+    FPPACK(FP1,B[1],X[1]);
 
     REGVALO(FP1,HWDSIZE);
 	

@@ -111,12 +111,12 @@ U6 digi(U6 n)
 	return j;
 }
 
-void PACK(U8[] f, U8[] e, U8[] c)
+void FPPACK(U8[] f, U8[] e, U8[] c)
 {
 	long sex = SREGVAL(e,SMREGSZ);
 	U6 ex = REGVAL(e,SMREGSZ);
-	long sco = SREGVAL(c,48);
-	U6 co = REGVAL(c,48);
+	long sco = SREGVAL(c,HWDSIZE);
+	U6 co = REGVAL(c,HWDSIZE);
 
 	if (sex >=0) {
 		ex += 1024;
