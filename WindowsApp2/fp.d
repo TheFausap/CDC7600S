@@ -142,5 +142,34 @@ void FPPACK(U8[] f, U8[] e, U8[] c)
 	}
 	
 	f[59] = (sco >=0) ? 0 : 1;
+}
 
+void UNPACK(U8[] f, U8[] e, U8[] c)
+{
+	for(int i=0;i<48;i++) {
+		c[i] = f[i];
+	}
+	for(int i=48;i<60;i++) {
+		c[i] = f[59];
+	}
+	e[0..10] = f[48..58];
+
+	if (f[59]==0) {
+		e[10] = !f[58]; // removing the bias
+	} else {
+		if (f[58]==1) {
+			for (int k = 0;k<11;k++) {
+				e[k] = !e[k];
+			}
+		} else {
+			for (int k = 0;k<10;k++) {
+				e[k] = !e[k];
+			}
+		}
+		
+	}
+	
+	for (int i=11;i<18;i++) {
+		e[i]=e[10];
+	}
 }

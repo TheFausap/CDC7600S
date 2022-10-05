@@ -1140,7 +1140,7 @@ void DUMP()
         for (int i = hwsz; i >=0; i--) {
             writef("%d", X[j][i]);
         }
-        printf("\t(");
+        printf("\t( ");
         WRITEO(REGVALO(X[j], HWDSIZE),HWDSIZE);
         printf(")\n");
     }
@@ -1161,8 +1161,8 @@ void DUMP()
         for (int i =resz; i >=0; i--) {
             printf("%d", A[j][i]);
         }
-        printf("\t\t\t\t\t\t(");
-        write(REGVAL(A[j], SMREGSZ));
+        printf("\t\t\t\t\t\t( ");
+        WRITEO(REGVALO(A[j], SMREGSZ), SMREGSZ);
         printf(")\n");
     }
     writeln("----");
@@ -1182,8 +1182,8 @@ void DUMP()
         for (int i = resz; i >=0; i--) {
             printf("%d", B[j][i]);
         }
-        printf("\t\t\t\t\t\t(");
-        write(REGVAL(B[j], SMREGSZ));
+        printf("\t\t\t\t\t\t( ");
+        WRITEO(REGVALO(B[j], SMREGSZ), SMREGSZ);
         printf(")\n");
 	}
      writeln("----");

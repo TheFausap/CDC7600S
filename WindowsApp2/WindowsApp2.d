@@ -26,20 +26,26 @@ int main()
     //SETXV(219902325555200,1);
     //SETXV(1152701602281291775,1); // Negative number
     //SETXV(175466594061841,1);
-    SETXV(224372305222683,1);
+    //SETXV(224372305222683,1);
 	//SETBV(262096,1); // Negative exponent
     //SETBV(262102,1); // Negative exponent
     //SETBV(262102,1); // Negative exponent
     //SETBV(755,1);
-    SETBV(261256,1);   // Negative exponent
+    //SETBV(261256,1);   // Negative exponent
 
     //FROUND(FP1,X[1]);
 
-    FPPACK(FP1,B[1],X[1]);
+    //FPPACK(FP1,B[1],X[1]);
 
     //REGVALO(FP1,HWDSIZE);
 	
-	CPYRRD(X[3],FP1);
+	//CPYRRD(X[3],FP1);
+
+    SETXV(296274432668729407,0);
+    //SETXV(280230358996222015,0);
+    //SETXV(856647071938117568,0);
+    //SETXV(872691145610624960,0);
+    UNPACK(X[0],B[1],X[1]);
 
     DUMP();
 
