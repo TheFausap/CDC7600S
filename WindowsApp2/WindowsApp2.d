@@ -49,7 +49,10 @@ int main()
     //UNPACK(X[0],B[1],X[1]);
 
     SETXV(296114412467520690,0);
+    //SETXV(856807092139326285,0);
+    ROUND(X[0]);
     SETBV(NORMALIZE(X[1],X[0]),1);
+    
 
     DUMP();
 

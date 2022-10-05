@@ -2,6 +2,13 @@ module fp;
 import utils;
 import std.math;
 
+
+U8 _fuadd(U8 a, U8 b, U8 ci, U8 co)
+{
+	co = (a & b)||(ci & (a ^ b));
+	return (a ^ b)^ci;
+}
+
 U6 BEXPN(U8[] f)
 {
 	return REGVALN(f,48,58);
@@ -76,14 +83,20 @@ void FROUND(U8[] d, U8[] f)
 
 ///
 /// Rounds the coefficient stored in d
+/// Valid for normalized numbers
 ///
 void ROUND(U8[] d)
 {
 	UI i = 0;
 	U8[] Z;
+	U8[] t1;
+	U8 ci = 0;
+	U8 co = 0;
 
 	Z.length = d.length;
+	t1.length = 48;
 	Z[] = 0;
+	t1[] = 0;
 
 	if (d == Z) {
 		d[47] = 1;
@@ -91,7 +104,11 @@ void ROUND(U8[] d)
 		while (d[i] != 1) {
 			i++;
 		}
-		d[i-1] = 1;
+		t1[i-1] = 1;
+		for (int j=0;j<48;j++) {
+			d[j] = _fuadd(d[j],t1[j],ci,co);
+			ci = co;
+		}
 	}
 }
 
@@ -188,16 +205,41 @@ U6 NORMALIZE(U8[] d, U8[] f)
 		return 0;
 	}
 
-	while(t[47] == f[59]) {
-		t[] = RSH(t,1);
-		r++;
+	if (f[59]==1) {
+		for(int i=0;i<t.length;i++) {
+			t[i]=!t[i];
+		}
 	}
+	
+	if (f[59]==0) {
+		while(t[47] == f[59]) {
+			t[] = RSH(t,1);
+			r++;
+		}
+	} else {
+		while(t[47] == !f[59]) {
+			t[] = RSH(t,1);
+			r++;
+		}
+	}
+	
 
-	e -= r;
+	if (f[59]==1) {
+		e += r;
+	} else {
+		e -= r;
+	}
 
 	for(int i = 48;i<58;i++) {
 		t[i] = cast(U8)e % 2;
 		e /= 2;
+	}
+
+
+	if (f[59]==1) {
+		for(int i=0;i<48;i++) {
+			t[i]=!t[i];
+		}
 	}
 
 	d[0..58] = t[0..58];

@@ -95,8 +95,8 @@ UI   IWK;
 
 U8[SMREGSZ] IA;
 
-U8 IWSpos = 11;
-U8 IASpos = 11;
+ubyte IWSpos = 11;
+ubyte IASpos = 11;
 U8[HWDSIZE][12] IWS;
 U8[SMREGSZ][12] IAS;
 
