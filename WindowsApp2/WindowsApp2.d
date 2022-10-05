@@ -3,6 +3,7 @@ module WindowsApp2;
 import std.stdio;
 import utils;
 import fp;
+import op;
 
 int main()
 {
@@ -41,11 +42,14 @@ int main()
 	
 	//CPYRRD(X[3],FP1);
 
-    SETXV(296274432668729407,0);
+    //SETXV(296274432668729407,0);
     //SETXV(280230358996222015,0);
     //SETXV(856647071938117568,0);
     //SETXV(872691145610624960,0);
-    UNPACK(X[0],B[1],X[1]);
+    //UNPACK(X[0],B[1],X[1]);
+
+    SETXV(296114412467520690,0);
+    SETBV(NORMALIZE(X[1],X[0]),1);
 
     DUMP();
 

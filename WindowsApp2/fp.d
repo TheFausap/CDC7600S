@@ -10,13 +10,13 @@ U6 BEXPN(U8[] f)
 ///
 /// Return the decimal value of the exponent in a packed FP number
 ///
-U6 EXPN(U8[] f)
+long EXPN(U8[] f)
 {
 	U6 rr = REGVALN(f,48,57);
 	if ((f[59] == 0) && f[58]==0) {
 		rr *= -1;
 	} else if ((f[59] == 1) && (f[58]==1)) {
-		rr *= -11;
+		rr *= -1;
 	}
 	
 	return rr;
@@ -172,4 +172,37 @@ void UNPACK(U8[] f, U8[] e, U8[] c)
 	for (int i=11;i<18;i++) {
 		e[i]=e[10];
 	}
+}
+
+U6 NORMALIZE(U8[] d, U8[] f) 
+{
+	U6 r = 0;
+	long e = 0;
+	U8[] t;
+	t.length = f.length - 2;
+
+	e = EXPN(f);
+	t[0..58] = f[0..58];
+
+	if (f[] == ZRO) {
+		return 0;
+	}
+
+	while(t[47] == f[59]) {
+		t[] = RSH(t,1);
+		r++;
+	}
+
+	e -= r;
+
+	for(int i = 48;i<58;i++) {
+		t[i] = cast(U8)e % 2;
+		e /= 2;
+	}
+
+	d[0..58] = t[0..58];
+	d[58]=f[58];
+	d[59]=f[59];
+
+	return r;
 }

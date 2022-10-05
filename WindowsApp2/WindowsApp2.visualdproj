@@ -502,6 +502,7 @@
  </Config>
  <Folder name="WindowsApp2">
   <File path="fp.d" />
+  <File path="op.d" />
   <File path="utils.d" />
   <File path="WindowsApp2.d" />
  </Folder>
