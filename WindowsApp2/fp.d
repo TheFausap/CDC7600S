@@ -121,21 +121,22 @@ void FPPACK(U8[] f, U8[] e, U8[] c)
 	if (sex >=0) {
 		ex += 1024;
 	} else {
-		ex = 1023 - ex;
+		ex = 1023 + sex;
+		f[58] = 1;
 	}
 	
 	if (sco < 0) {
-		ex = (10 ^^ digi(ex) - 1) - ex;
+		ex = 4095 - ex;
 	}
 	for (int i=0;i<48;i++) {
 		f[i] = co % 2;
 		co /= 2;
 	}
-	for (int i=48;i<59;i++) {
+	for (int i=48;i<58;i++) {
 		f[i] = (ex % 2);
 		ex /= 2;
 	}
 	
-	f[59] = (sex >=0) ? 0 : 1;
+	f[59] = (sco >=0) ? 0 : 1;
 
 }

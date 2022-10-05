@@ -22,14 +22,17 @@ int main()
 
     parseCIW();
 
-    SETXV(140737488355328,1);
-    SETBV(32720,1);
+    //SETXV(140737488355328,1);
+    //SETXV(219902325555200,1);
+    SETXV(1152701602281291775,1); // Negative number
+	//SETBV(32720,1);
+    SETBV(262102,1);
 
     //FROUND(FP1,X[1]);
 
     FPPACK(FP1,B[1],X[1]);
 
-    REGVALO(FP1,HWDSIZE);
+    //REGVALO(FP1,HWDSIZE);
 	
 	CPYRRD(X[3],FP1);
 

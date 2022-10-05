@@ -397,16 +397,21 @@ U8[] REGVALO(U8[] r, U8 l)
 long SREGVAL(U8[] r, U8 l)
 {
     long rr = 0;
+    U8[] t;
     U8 neg = 0;
 
+    t.length = l;
     // if negative uncomplement
     if (r[l-1] == 1) {
         for (int i=0;i<l;i++) {
-            r[i] = !r[i];
+            t[i] = !r[i];
 		}
+        neg = 1;
+	} else {
+        t = r;
 	}
     for (int j = 0; j < l-1; j++) {
-        rr += r[j] * pow(2UL, j);
+        rr += t[j] * pow(2UL, j);
     }
 
     return (neg == 0) ? rr : -rr;
