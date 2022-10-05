@@ -25,11 +25,13 @@ int main()
     //SETXV(140737488355328,1);
     //SETXV(219902325555200,1);
     //SETXV(1152701602281291775,1); // Negative number
-    SETXV(175466594061841,1);
+    //SETXV(175466594061841,1);
+    SETXV(224372305222683,1);
 	//SETBV(262096,1); // Negative exponent
     //SETBV(262102,1); // Negative exponent
     //SETBV(262102,1); // Negative exponent
-    SETBV(755,1);
+    //SETBV(755,1);
+    SETBV(261256,1);   // Negative exponent
 
     //FROUND(FP1,X[1]);
 
