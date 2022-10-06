@@ -87,25 +87,26 @@ void FROUND(U8[] d, U8[] f)
 ///
 void ROUND(U8[] d)
 {
-	UI i = 0;
+	UI i = 46;
 	U8[] Z;
 	U8[] t1;
 	U8 ci = 0;
 	U8 co = 0;
 
 	Z.length = d.length;
-	t1.length = 48;
+	t1.length = 58;
 	Z[] = 0;
 	t1[] = 0;
 
 	if (d == Z) {
 		d[47] = 1;
 	} else {
-		while (d[i] != 1) {
-			i++;
+		while (d[i] != 0) {
+			i--;
 		}
+		/*d[i] = 1;*/
 		t1[i-1] = 1;
-		for (int j=0;j<48;j++) {
+		for (int j=0;j<58;j++) {
 			d[j] = _fuadd(d[j],t1[j],ci,co);
 			ci = co;
 		}
@@ -223,12 +224,12 @@ U6 NORMALIZE(U8[] d, U8[] f)
 		}
 	}
 	
-
 	if (f[59]==1) {
 		e += r;
 	} else {
 		e -= r;
 	}
+
 
 	for(int i = 48;i<58;i++) {
 		t[i] = cast(U8)e % 2;

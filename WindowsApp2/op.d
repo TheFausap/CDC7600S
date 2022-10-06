@@ -508,8 +508,7 @@ void O25ijk()
         SETBV(0UL,cast(U8)IWj);
         X[IWi] = X[IWk];
 	} else {
-        ex = REGVALN(X[IWk],48,57);
-		ex *= (X[IWk][58] == 0) ? 1 : -1;
+        ex = EXPN(X[IWk]);
 
 		while (co[47] != X[IWk][59]) {
 			LSH(co,i);
